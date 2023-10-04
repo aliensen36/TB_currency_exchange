@@ -24,14 +24,17 @@ def convert(message: telebot.types.Message):
         if len(values) != 3:
             raise ConvertionException('Ошибка: некорректное число параметров.')
 
-        quote, base, amount = values
-        rate = ExchangeRates.convert(quote, base, amount)
+        base, quote, amount = values
+        amount_float = float(amount)
+        rate = ExchangeRates.convert(values)
+        convertion_result = round((amount_float * rate), 2)
     except ConvertionException as e:
         bot.reply_to(message, f'Не удалось обработать команду\n{e}')
     except Exception as e:
         bot.reply_to(message, f'Не удалось обработать команду\n{e}')
     else:
-        text = f"Для покупки {amount} '{quote}' вам потребуется {rate} '{base}'."
+        text = f"Для покупки {amount} '{base}' вам потребуется {convertion_result} '{quote}'."
+        print(text)
         bot.send_message(message.chat.id, text)
 
 bot.polling(none_stop=True)
